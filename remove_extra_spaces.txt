@@ -1,0 +1,93 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+#include <stdio.h>
+#include <cstdint>
+#include <iterator>
+#include <iostream>
+#include <vector>
+#include <string_view>
+#include <cassert>
+
+std::size_t remove_extra_spaces(std::string& input)
+{
+    static constexpr uint8_t single_sep = '_';
+    
+    uint8_t prev = 0;
+    std::size_t current_pos = 0;
+    
+    auto end_it = std::end(input);
+    for (auto it = std::begin(input); it != end_it; ++it)
+    {
+        auto v = *it;
+        if ((v != single_sep) && (v != '\0'))
+        {
+            input[current_pos] = v;
+            ++current_pos;
+        }
+        else
+        {  
+            if ((prev != 0) && (prev != single_sep))
+            {
+                input[current_pos] = v;
+                ++current_pos;
+            }
+        }
+        prev = v;
+    }
+    
+    if (single_sep == input[current_pos - 1])
+    {
+        --current_pos;
+    } 
+    
+    return current_pos;
+}
+
+int main()
+{
+    std::vector<std::string> input = 
+	{
+		"___ghs_werd____er_s___s_R___"
+		,"_y___7_"
+		,"_"
+		,"___"
+		,"l+0_"
+		,"_k1"
+		,"9_3___u0"
+		,"tyu"
+	};
+	
+	constexpr std::string_view exp_output[] = 
+	{
+		"ghs_werd_er_s_s_R"
+		,"y_7"
+		,""
+		,""
+		,"l+0"
+		,"k1"
+		,"9_3_u0"
+		,"tyu"
+	};
+	
+	auto exp_item_it = std::begin(exp_output);
+	for (auto& item : input)
+	{
+		auto const current_size = remove_extra_spaces(item);
+    
+		assert(*exp_item_it == std::string_view(item.c_str(), current_size));
+		
+		item.resize(current_size);
+		
+		assert(std::string(*exp_item_it) == item);
+		
+		++exp_item_it;
+	}
+
+    return 0;
+}
